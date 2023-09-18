@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-import Database from './Database'
+import Database from './Database';
+import { Feather as Icon } from '@expo/vector-icons';
 
 export default function AppForm({ route, navigation }) {
-    const id = route.params ? route.params.id : undefined;
+
+    const id = route.params ? route.params.id:undefined;
     const [descricao, setDescricao] = useState(''); 
     const [quantidade, setQuantidade] = useState('');
 
@@ -13,6 +14,7 @@ export default function AppForm({ route, navigation }) {
       if(!route.params) return;
       setDescricao(route.params.descricao);
       setQuantidade(route.params.quantidade.toString());
+    
     }, [route])
   
 
@@ -21,18 +23,10 @@ export default function AppForm({ route, navigation }) {
 
     async function handleButtonPress(){ 
       const listItem = {id: new Date().getTime(), descricao, quantidade: parseInt(quantidade)};
-      Database.saveItem(listItem)
+      Database.saveItem(listItem, id)
       .then( response=> navigation.navigate("AppList", listItem));
 
-      // let savedItems = [];
-      // const response = await AsyncStorage.getItem('items');
-      
-      // if(response) savedItems = JSON.parse(response);
-      // savedItems.push(listItem);
-    
-      // await AsyncStorage.setItem('items', JSON.stringify(savedItems));
-      // navigation.navigate("AppList", listItem);
-    }
+      }
 
     return (
       <View style={styles.container}>
@@ -44,16 +38,20 @@ export default function AppForm({ route, navigation }) {
             placeholder="O que está faltando em casa?"
             value={descricao}
             clearButtonMode="always" /> 
+            
           <TextInput 
             style={styles.input}  
-            onChangeText={handleQuantityChange}
             placeholder="Digite a quantidade" 
+            onChangeText={handleQuantityChange}
             keyboardType={'numeric'}
             value={quantidade.toString()}
             clearButtonMode="always" /> 
 
           <TouchableOpacity style={styles.button} onPress={handleButtonPress}> 
-            <Text style={styles.buttonText}>Salvar</Text> 
+          <View>
+            <Icon name="save" color="white" size={18} />
+            <Text style={styles.buttonText}>Salvar</Text>
+          </View>
           </TouchableOpacity> 
           
         </View>
@@ -68,7 +66,7 @@ export default function AppForm({ route, navigation }) {
       alignItems: 'center',
     },
     title: {
-      color: '#fff',
+      color: 'black',
       fontSize: 20,
       fontWeight: 'bold',
       marginTop: 50,
@@ -95,7 +93,7 @@ export default function AppForm({ route, navigation }) {
     button: {
       marginTop: 10,
       height: 60,
-      backgroundColor: 'blue',
+      backgroundColor: 'green',
       borderRadius: 10,
       paddingHorizontal: 24,
       fontSize: 16,

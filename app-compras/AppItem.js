@@ -1,21 +1,43 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import Database from "./Database";  
+import {StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
+import Database from './Database';  
+import { Feather as Icon } from '@expo/vector-icons';
 
 export default function AppItem(props){
     async function handleEditPress(){ 
         const item = await Database.getItem(props.id);
         props.navigation.navigate("AppForm", item);
     }
+
+    function handleDeletePress(){ 
+        Alert.alert(
+            "Atenção",
+            "Você tem certeza que deseja excluir este item?",
+            [
+                {
+                text: "Não",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+                },
+                { text: "Sim", onPress: () => {
+                        Database.deleteItem(props.id)
+                            .then(response => props.navigation.navigate("AppList", {id: props.id}));
+                    }
+                }
+            ],
+            { cancelable: false }
+            );
+    }
+
     return (
         <View style={styles.container}>
           <Text style={styles.textItem}>{props.item}</Text>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.deleteButton} > 
-                <Text style={styles.buttonText}>X</Text> 
+            <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton} > 
+            <Icon name="trash" color="white" size={18} />
             </TouchableOpacity> 
             <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>  
-                <Text style={styles.buttonText}>Editar</Text> 
+            <Icon name="edit" color="white" size={18} />
             </TouchableOpacity> 
           </View>
         </View>
@@ -39,7 +61,7 @@ const styles = StyleSheet.create({
     editButton: {
         marginLeft: 10,
         height: 40,
-        backgroundColor: 'blue',
+        backgroundColor: 'green',
         borderRadius: 10,
         padding: 10,
         fontSize: 12,
